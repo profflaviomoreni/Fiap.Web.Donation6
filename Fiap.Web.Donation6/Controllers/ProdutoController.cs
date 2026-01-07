@@ -14,10 +14,7 @@ namespace Fiap.Web.Donation6.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            // SELECT * FROM produto WHERE ProdutoId = id
-            // Carregar no objeto ProdutoModel os dados banco
             var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
-
             return View(produto);
         }
 
@@ -33,21 +30,30 @@ namespace Fiap.Web.Donation6.Controllers
 
             } else
             {
-                // UPDATE produto SET ... WHERE ProdutoId = produtoModel.ProdutoId
-                // Criar uma mensagem de sucesso
-                // Exibir a tela dizendo que tivemos sucesso
-
-                ViewBag.SuccessMessage = $"Produto {produtoModel.NomeProduto} atualizado com sucesso!";
-
-                var produtos = ListarProdutosMock();
-
-                return View("Index", produtos);
+                TempData["SuccessMessage"] = $"Produto {produtoModel.NomeProduto} atualizado com sucesso!";
+                return RedirectToAction(nameof(Index));
 
             }
-
-
         }
 
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
+            return View(produto);
+        }
+
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
+
+            // DELETE from PRODUTOS WHERE ProdutoID = id
+
+            TempData["SuccessMessage"] = $"Produto {produto.NomeProduto} removido com sucesso!";
+            return RedirectToAction(nameof(Index));
+        }
 
 
         private List<ProdutoModel> ListarProdutosMock()

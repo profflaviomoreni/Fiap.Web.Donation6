@@ -5,9 +5,9 @@
     <a href="#" class="create btn btn-dark">Novo produto</a>
 </p>
 
-@if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+@if (!string.IsNullOrEmpty( TempData["SuccessMessage"] as string ))
 {
-    <div class="alert alert-info">@ViewBag.SuccessMessage</div>
+    <div class="alert alert-info">@TempData["SuccessMessage"]</div>
 }
 
 <table class="table table-striped" border="1" cellspacing="0" cellpadding="0">
@@ -32,9 +32,9 @@
             <td data-field="disponivel">@item.Disponivel</td>
             <td data-field="dataExpiracao">@item.DataExpiracao</td>
             <td class="actions" width="220">
-                <a href="#">Detalhe</a>
+                <a href="/Produto/Details/@item.ProdutoId">Detalhe</a>
                 <a href="/Produto/Edit/@item.ProdutoId">Editar</a>
-                <a href="#">Remover</a>
+                <a href="/Produto/Delete/@item.ProdutoId">Remover</a>
             </td>
         </tr>
         }
