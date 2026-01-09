@@ -1,7 +1,16 @@
+using Fiap.Web.Donation6.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionsString = builder.Configuration.GetConnectionString("databaseUrl");
+builder.Services.AddDbContext<DataContext>(
+    opt => opt.UseSqlServer(connectionsString)
+              .EnableSensitiveDataLogging(true)
+);
 
 var app = builder.Build();
 

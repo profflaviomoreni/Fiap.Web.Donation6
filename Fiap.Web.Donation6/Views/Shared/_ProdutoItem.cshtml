@@ -1,0 +1,14 @@
+﻿@model ProdutoModel
+
+<tr>
+    <td data-field="id"># @Model.ProdutoId</td>
+    <td data-field="name">@Model.NomeProduto</td>
+    <td data-field="categoria">@Model.CategoriaId</td>
+    <td data-field="disponivel">@Model.Disponivel</td>
+    <td data-field="dataExpiracao">@Model.DataExpiracao</td>
+    <td class="actions" width="220">
+        <a href="/Produto/Details/@Model.ProdutoId">Detalhe</a>
+        <a href="/Produto/Edit/@Model.ProdutoId">Editar</a>
+        <a href="/Produto/Delete/@Model.ProdutoId">Remover</a>
+    </td>
+</tr>
