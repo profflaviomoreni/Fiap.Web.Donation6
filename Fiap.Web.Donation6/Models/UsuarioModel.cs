@@ -6,6 +6,7 @@ namespace Fiap.Web.Donation6.Models
 {
     [Table("Usuario")]
     [Index(nameof(Email), nameof(Senha))]
+    [Index(nameof(Nome))]
     public class UsuarioModel
     {
 

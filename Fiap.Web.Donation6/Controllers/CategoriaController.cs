@@ -1,40 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Fiap.Web.Donation6.Data;
+﻿using Fiap.Web.Donation6.Data;
 using Fiap.Web.Donation6.Models;
+using Fiap.Web.Donation6.Repository;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Web.Donation6.Controllers
 {
     public class CategoriaController : Controller
     {
-        private readonly DataContext _context;
+
+        private readonly CategoriaRepository _categoriaRepository;
 
         public CategoriaController(DataContext context)
         {
-            _context = context;
+            _categoriaRepository = new CategoriaRepository(context);
         }
 
         // GET: Categoria
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categorias.ToListAsync());
+            return View(_categoriaRepository.FindAll());
         }
 
         // GET: Categoria/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var categoriaModel = await _context.Categorias
-                .FirstOrDefaultAsync(m => m.CategoriaId == id);
+            var categoriaModel = _categoriaRepository.FindById(id);
             if (categoriaModel == null)
             {
                 return NotFound();
@@ -58,22 +54,21 @@ namespace Fiap.Web.Donation6.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(categoriaModel);
-                await _context.SaveChangesAsync();
+                _categoriaRepository.Insert(categoriaModel);
                 return RedirectToAction(nameof(Index));
             }
             return View(categoriaModel);
         }
 
         // GET: Categoria/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var categoriaModel = await _context.Categorias.FindAsync(id);
+            var categoriaModel = _categoriaRepository.FindById(id);
             if (categoriaModel == null)
             {
                 return NotFound();
@@ -97,8 +92,7 @@ namespace Fiap.Web.Donation6.Controllers
             {
                 try
                 {
-                    _context.Update(categoriaModel);
-                    await _context.SaveChangesAsync();
+                    _categoriaRepository.Update(categoriaModel);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -117,15 +111,14 @@ namespace Fiap.Web.Donation6.Controllers
         }
 
         // GET: Categoria/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var categoriaModel = await _context.Categorias
-                .FirstOrDefaultAsync(m => m.CategoriaId == id);
+            var categoriaModel = _categoriaRepository.FindById(id);
             if (categoriaModel == null)
             {
                 return NotFound();
@@ -139,19 +132,19 @@ namespace Fiap.Web.Donation6.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var categoriaModel = await _context.Categorias.FindAsync(id);
+            var categoriaModel = _categoriaRepository.FindById(id);
             if (categoriaModel != null)
             {
-                _context.Categorias.Remove(categoriaModel);
+                _categoriaRepository.Delete(id);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoriaModelExists(int id)
         {
-            return _context.Categorias.Any(e => e.CategoriaId == id);
+            var categoria = _categoriaRepository.FindById(id);
+            return categoria != null;
         }
     }
 }

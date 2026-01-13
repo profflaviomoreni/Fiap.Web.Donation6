@@ -1,13 +1,23 @@
-﻿using Fiap.Web.Donation6.Models;
+﻿using Fiap.Web.Donation6.Data;
+using Fiap.Web.Donation6.Models;
+using Fiap.Web.Donation6.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fiap.Web.Donation6.Controllers
 {
     public class ProdutoController : Controller
     {
+
+        private readonly ProdutoRepository _produtoRepository;
+        public ProdutoController(DataContext dataContext)
+        {
+            _produtoRepository = new ProdutoRepository(dataContext);
+        }
+
+
         public IActionResult Index()
         {
-            var produtos = ListarProdutosMock();
+            var produtos = _produtoRepository.FindAll();
             return View(produtos);
         }
 

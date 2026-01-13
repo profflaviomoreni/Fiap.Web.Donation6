@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fiap.Web.Donation6.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260109005019_Usuario_Create_Table")]
-    partial class Usuario_Create_Table
+    [Migration("20260112221850_Usuario_Create_Index")]
+    partial class Usuario_Create_Index
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,43 @@ namespace Fiap.Web.Donation6.Migrations
                     b.HasIndex("NomeCategoria");
 
                     b.ToTable("Categoria");
+                });
+
+            modelBuilder.Entity("Fiap.Web.Donation6.Models.UsuarioModel", b =>
+                {
+                    b.Property<int>("UsuarioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UsuarioId"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Regra")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UsuarioId");
+
+                    b.HasIndex("Nome");
+
+                    b.HasIndex("Email", "Senha");
+
+                    b.ToTable("Usuario");
                 });
 #pragma warning restore 612, 618
         }
