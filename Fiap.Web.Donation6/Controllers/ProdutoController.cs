@@ -2,16 +2,23 @@
 using Fiap.Web.Donation6.Models;
 using Fiap.Web.Donation6.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Fiap.Web.Donation6.Controllers
 {
     public class ProdutoController : Controller
     {
 
+        private readonly int UserId = 1;
+
         private readonly ProdutoRepository _produtoRepository;
+
+        private readonly CategoriaRepository _categoriaRepository;
+
         public ProdutoController(DataContext dataContext)
         {
             _produtoRepository = new ProdutoRepository(dataContext);
+            _categoriaRepository = new CategoriaRepository(dataContext);
         }
 
 
@@ -21,10 +28,43 @@ namespace Fiap.Web.Donation6.Controllers
             return View(produtos);
         }
 
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            CarregarCategorias();
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult Create(ProdutoModel produtoModel)
+        {
+            produtoModel.UsuarioId = UserId; // Vamos apagar no futuro
+
+            if (ModelState.IsValid)
+            {
+                _produtoRepository.Insert(produtoModel);
+                TempData["SuccessMessage"] = $"Produto {produtoModel.NomeProduto} cadastrado com sucesso!";
+                return RedirectToAction(nameof(Index));
+            } 
+            else
+            {                
+                CarregarCategorias();
+
+                ViewBag.ErrorMessage = "Campos inválidos";
+                return View(produtoModel);
+            }
+        }
+
+
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
+            var produto = _produtoRepository.FindById(id);
+            CarregarCategorias();
+
             return View(produto);
         }
 
@@ -32,24 +72,28 @@ namespace Fiap.Web.Donation6.Controllers
         [HttpPost]
         public IActionResult Edit(ProdutoModel produtoModel)
         {
-            
-            if (string.IsNullOrEmpty(produtoModel.SugestaoTroca))
+            produtoModel.UsuarioId = UserId; // Vamos apagar no futuro
+
+            if (! ModelState.IsValid)
             {
-                ViewBag.ErrorMessage = "A sugestão de troca é obrigatória.";
+                CarregarCategorias();
+
+                ViewBag.ErrorMessage = "Campos inválidos";
                 return View(produtoModel);
-
-            } else
+            }
+            else
             {
-                TempData["SuccessMessage"] = $"Produto {produtoModel.NomeProduto} atualizado com sucesso!";
+                _produtoRepository.Update(produtoModel);
+                TempData["SuccessMessage"] = $"Produto {produtoModel.NomeProduto} alterado com sucesso!";
                 return RedirectToAction(nameof(Index));
-
             }
         }
+
 
         [HttpGet]
         public IActionResult Details(int id)
         {
-            var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
+            var produto = _produtoRepository.FindById(id);
             return View(produto);
         }
 
@@ -57,56 +101,20 @@ namespace Fiap.Web.Donation6.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var produto = ListarProdutosMock().Where(p => p.ProdutoId == id).FirstOrDefault();
+            var produto = _produtoRepository.FindById(id);
 
-            // DELETE from PRODUTOS WHERE ProdutoID = id
+            _produtoRepository.Delete(produto.ProdutoId);
 
             TempData["SuccessMessage"] = $"Produto {produto.NomeProduto} removido com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 
 
-        private List<ProdutoModel> ListarProdutosMock()
+        private void CarregarCategorias()
         {
-            // SELECT * FROM produtos ...
-
-            var produtos = new List<ProdutoModel>{
-                new ProdutoModel()
-                {
-                    ProdutoId = 1,
-                    NomeProduto = "Iphone 11",
-                    SugestaoTroca = "Descrição da troca",
-                    CategoriaId = 1,
-                    Disponivel = true,
-                    DataExpiracao = DateTime.Now,
-                },
-                new ProdutoModel()
-                {
-                    ProdutoId = 2,
-                    NomeProduto = "Iphone 12",
-                    CategoriaId = 2,
-                    Disponivel = true,
-                    DataExpiracao = DateTime.Now,
-                },
-                new ProdutoModel()
-                {
-                    ProdutoId = 3,
-                    NomeProduto = "Iphone 13",
-                    CategoriaId = 1,
-                    Disponivel = true,
-                    DataExpiracao = DateTime.Now,
-                },
-                new ProdutoModel()
-                {
-                    ProdutoId = 4,
-                    NomeProduto = "Iphone 14",
-                    CategoriaId = 1,
-                    Disponivel = false,
-                    DataExpiracao = DateTime.Now,
-                },
-            };
-
-            return produtos;
+            var categorias = _categoriaRepository.FindAll();
+            var selectCategorias = new SelectList(categorias, "CategoriaId", "NomeCategoria");
+            ViewBag.Categorias = selectCategorias;
         }
 
 

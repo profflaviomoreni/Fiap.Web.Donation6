@@ -12,29 +12,37 @@ namespace Fiap.Web.Donation6.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProdutoId { get; set; }
 
-        [Required]
+        [Display(Name = "Nome do Produto" )]
+        [Required(ErrorMessage = "O campo nome é requerido")]
         [StringLength(50)]
         public string NomeProduto { get; set; }
 
-        [Required]
+        [Display(Name = "Descrição")]
+        [Required(ErrorMessage = "O campo descrição é requerido")]
         [StringLength(50)]
         public string Descricao { get; set; }
 
-        [Required]
+        [Display(Name = "Sugestão de Troca")]
+        [Required(ErrorMessage = "O campo sugestão é requerido")]
         [StringLength(200)]
         public string SugestaoTroca { get; set; }
 
 
         public bool Disponivel { get; set; } = true;
 
-        [Required]
-        public double Valor { get; set; }
+        [Required(ErrorMessage = "O campo valor é requerido")]
+        [Range(minimum: 10, maximum: 30000, ErrorMessage = "O valor do produto deverá ser entre R$ 10 e R$ 30.000")]
+        public double? Valor { get; set; }
 
         public DateTime DataCadastro { get; set; } = DateTime.Now;
 
-        public DateTime DataExpiracao { get; set; }
+        [Display(Name = "Data de Expiração")]
+        [Required(ErrorMessage = "A data de expiração é requerida")]
+        [DataType(DataType.Date)]
+        public DateTime? DataExpiracao { get; set; }
 
-        
+
+        [Display(Name = "Categoria")]
         public int CategoriaId { get; set; } // FK Categoria (Categoria que o produto pertence)
 
         [ForeignKey(nameof(CategoriaId))]

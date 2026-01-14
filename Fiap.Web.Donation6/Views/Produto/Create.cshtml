@@ -1,13 +1,12 @@
 ﻿@model ProdutoModel
 
-<h1>Editar Produto</h1>
+<h1>Novo Produto</h1>
 
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
             <div class="well">
-                <form asp-controller="Produto" asp-action="Edit" method="post">
-                    <input asp-for="ProdutoId" type="hidden" />
+                <form asp-controller="Produto" asp-action="Create" method="post">
                     <div class="form-group">
                         <label asp-for="NomeProduto" class="form-label"></label>
                         <input asp-for="NomeProduto" class="form-control w-50" />
@@ -43,7 +42,7 @@
                     <div class="form-group">
                         <label asp-for="CategoriaId" class="control-label"></label>
                         <select asp-for="CategoriaId" asp-items="@ViewBag.Categorias" class="form-control">
-                            <option value="">Selecione</option>
+                            <option value="">Selecione</option>                            
                         </select>
                     </div>
 
