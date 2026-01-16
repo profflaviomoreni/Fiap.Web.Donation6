@@ -1,5 +1,6 @@
 ﻿using Fiap.Web.Donation6.Data;
 using Fiap.Web.Donation6.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Web.Donation6.Repository
 {
@@ -17,13 +18,91 @@ namespace Fiap.Web.Donation6.Repository
         public List<ProdutoModel> FindAll()
         {
 
-            return _dataContext.Produtos.ToList() ?? new List<ProdutoModel>();
+            return _dataContext.Produtos.AsNoTracking().ToList() ?? new List<ProdutoModel>();
         }
+
+        public List<ProdutoModel> FindAllWithCategoriaAndUsuario()
+        {
+            var produtos = _dataContext.Produtos.AsNoTracking()
+                                .Include( p => p.Categoria)
+                                .Include( p => p.Usuario)
+                                .ToList();
+
+            return produtos ?? new List<ProdutoModel>();
+        }
+
+
+        public List<ProdutoModel> FindAllWithCategoriaAndUsuarioByName(string nomeParcial)
+        {
+
+            // SELECT * FROM produto WHERE nome like '%nomeParcial%'
+
+            var produtos = _dataContext.Produtos.AsNoTracking()
+                                .Where( p => 
+                                    p.NomeProduto.ToLower().Contains(nomeParcial.ToLower()) &&
+                                    p.Disponivel == true &&
+                                    p.DataExpiracao >= DateTime.Now
+                                 )
+                                .Include(p => p.Categoria)
+                                .Include(p => p.Usuario)
+                                .ToList();
+
+            return produtos ?? new List<ProdutoModel>();
+        }
+
+
+        public List<ProdutoModel> FindAllAvailablesWithCategoriaAndUsuario()
+        {
+            var produtos = _dataContext.Produtos.AsNoTracking()
+                                .Where( p =>
+                                    p.Disponivel == true &&
+                                    p.DataExpiracao >= DateTime.UtcNow
+                                )
+                                .Include(c => c.Categoria) // INNER JOIN                                   
+                                .Include(u => u.Usuario)   // INNER JOIN 
+                                .ToList();
+
+            return produtos ?? new List<ProdutoModel>();
+        }
+
+        public List<ProdutoModel> FindAllAvailablesWithCategoriaAndUsuarioByUserId(int userId)
+        {
+            var produtos = _dataContext.Produtos.AsNoTracking()
+                                .Where(p =>
+                                    p.Disponivel == true &&
+                                    p.DataExpiracao >= DateTime.UtcNow &&
+                                    p.UsuarioId == userId
+                                )
+                                .Include(c => c.Categoria) // INNER JOIN                                   
+                                .Include(u => u.Usuario)   // INNER JOIN 
+                                .ToList();
+
+            return produtos ?? new List<ProdutoModel>();
+        }
+
+        public List<ProdutoModel> FindAllAvailablesForChangeWithCategoriaAndUsuario(int userId)
+        {
+            var produtos = _dataContext.Produtos.AsNoTracking()
+                                .Where(p =>
+                                    p.Disponivel == true &&
+                                    p.DataExpiracao >= DateTime.UtcNow &&
+                                    p.UsuarioId != userId
+                                )
+                                .Include(c => c.Categoria) // INNER JOIN                                   
+                                .Include(u => u.Usuario)   // INNER JOIN 
+                                .ToList();
+
+            return produtos ?? new List<ProdutoModel>();
+        }
+
 
 
         public ProdutoModel FindById(int id)
         {
-            return _dataContext.Produtos.Find(id);
+            //return _dataContext.Produtos.Find(id);
+
+            return _dataContext.Produtos.AsNoTracking()
+                        .SingleOrDefault( p=> p.ProdutoId == id );
         }
 
 

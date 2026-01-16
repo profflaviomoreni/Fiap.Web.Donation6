@@ -1,4 +1,5 @@
-﻿using Fiap.Web.Donation6.Data;
+﻿using Fiap.Web.Donation6.Controllers.Filters;
+using Fiap.Web.Donation6.Data;
 using Fiap.Web.Donation6.Models;
 using Fiap.Web.Donation6.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -6,10 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Fiap.Web.Donation6.Controllers
 {
-    public class ProdutoController : Controller
-    {
 
-        private readonly int UserId = 1;
+    
+    public class ProdutoController : BaseController
+    {
 
         private readonly ProdutoRepository _produtoRepository;
 
@@ -24,11 +25,14 @@ namespace Fiap.Web.Donation6.Controllers
 
         public IActionResult Index()
         {
-            var produtos = _produtoRepository.FindAll();
+            //var produtos = _produtoRepository.FindAll();
+            var produtos = _produtoRepository.FindAllWithCategoriaAndUsuario();
+            //var produtos = _produtoRepository.FindAllWithCategoriaAndUsuarioByName("14");
             return View(produtos);
         }
 
 
+        [Autenticado]
         [HttpGet]
         public IActionResult Create()
         {
@@ -37,10 +41,11 @@ namespace Fiap.Web.Donation6.Controllers
         }
 
 
+        [Autenticado]
         [HttpPost]
         public IActionResult Create(ProdutoModel produtoModel)
         {
-            produtoModel.UsuarioId = UserId; // Vamos apagar no futuro
+            produtoModel.UsuarioId = UsuarioLogado.UsuarioId; // Vamos apagar no futuro
 
             if (ModelState.IsValid)
             {
@@ -58,7 +63,7 @@ namespace Fiap.Web.Donation6.Controllers
         }
 
 
-
+        [Autenticado]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -68,11 +73,11 @@ namespace Fiap.Web.Donation6.Controllers
             return View(produto);
         }
 
-
+        [Autenticado]
         [HttpPost]
         public IActionResult Edit(ProdutoModel produtoModel)
         {
-            produtoModel.UsuarioId = UserId; // Vamos apagar no futuro
+            produtoModel.UsuarioId = UsuarioLogado.UsuarioId; // Vamos apagar no futuro
 
             if (! ModelState.IsValid)
             {
@@ -97,7 +102,7 @@ namespace Fiap.Web.Donation6.Controllers
             return View(produto);
         }
 
-
+        [Autenticado]
         [HttpGet]
         public IActionResult Delete(int id)
         {

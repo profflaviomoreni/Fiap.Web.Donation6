@@ -1,5 +1,6 @@
 ﻿using Fiap.Web.Donation6.Data;
 using Fiap.Web.Donation6.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Web.Donation6.Repository
 {
@@ -24,6 +25,18 @@ namespace Fiap.Web.Donation6.Repository
         public UsuarioModel FindById(int id)
         {
             return _dataContext.Usuarios.Find(id);
+        }
+
+
+        public UsuarioModel FindByEmailAndSenha(string email, string senha)
+        {
+            var usuarioModel = _dataContext.Usuarios.AsNoTracking()
+                                    .Where(u => 
+                                        u.Email == email &&
+                                        u.Senha == senha)
+                                    .FirstOrDefault();
+
+            return usuarioModel;
         }
 
 
