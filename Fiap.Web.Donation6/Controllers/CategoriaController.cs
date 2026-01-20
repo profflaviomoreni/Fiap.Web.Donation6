@@ -1,4 +1,5 @@
-﻿using Fiap.Web.Donation6.Data;
+﻿using Fiap.Web.Donation6.Controllers.Filters;
+using Fiap.Web.Donation6.Data;
 using Fiap.Web.Donation6.Models;
 using Fiap.Web.Donation6.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Web.Donation6.Controllers
 {
-    public class CategoriaController : Controller
+
+    [Autenticado]
+    public class CategoriaController : BaseController
     {
 
         private readonly CategoriaRepository _categoriaRepository;

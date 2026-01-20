@@ -102,6 +102,8 @@ namespace Fiap.Web.Donation6.Repository
             //return _dataContext.Produtos.Find(id);
 
             return _dataContext.Produtos.AsNoTracking()
+                        .Include(c => c.Categoria) // INNER JOIN                                   
+                        .Include(u => u.Usuario)   // INNER JOIN 
                         .SingleOrDefault( p=> p.ProdutoId == id );
         }
 

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Fiap.Web.Donation6.Controllers
 {
 
-    
+    [Autenticado]
     public class ProdutoController : BaseController
     {
 
